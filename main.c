@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <stdint.h>
 
 
-int main(int argc, char ** argv) {
-  return 1;
+int main(int argc, char **argv) {
+  printf("Hello, world!");
+  return 0;
 }

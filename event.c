@@ -26,7 +26,6 @@ void watch_init(char *file_name){
 
 void watch_and_say(char *file_name){
 #ifdef __linux__
-  char *p;
   const int buf_size = sizeof(struct inotify_event) + NAME_MAX + 1;
   char read_buf[buf_size] __attribute__ ((aligned(8)));
   struct inotify_event *ev;
@@ -34,7 +33,7 @@ void watch_and_say(char *file_name){
   if (read_bytes <= 0) {
     exit(-1);
   }
-  ev = (struct inotify_event *) p;
+  ev = (struct inotify_event *) read_buf;
   printf("File system event: %d (IN_MODIFY) with file %s\n", ev -> mask, file_name);
   return;
 #endif //__linux__

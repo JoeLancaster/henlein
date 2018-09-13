@@ -10,7 +10,7 @@ char * names[] = {"IN_ACCESS", "IN_ATTRIB", "IN_CLOSE_WRITE", "IN_CLOSE_NOWRITE"
 char * mask_to_string(uint32_t m) {
   int i = 0;
   while(triggers[i++] != m);
-  return names[i];
+  return names[i - 1];
 }
 
 uint32_t string_to_mask(char * n) {

@@ -26,7 +26,6 @@ void timestamp(char * msg, ...) {
   }
   printf("%s | ", out);
   vprintf(msg, ap);
-  va_end(ap);//
-  //
+  va_end(ap);
   return;
 }

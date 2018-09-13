@@ -7,6 +7,6 @@
 
 void watch_init(char *);
 void watch_and_say(char *);
-int watch_and_do(hen_action);
+void watch_and_do(hen_action);
 
 #endif //EVENT_H

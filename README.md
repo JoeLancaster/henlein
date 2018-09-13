@@ -6,4 +6,5 @@ Henlein (Named after Peter Henlein) is a small tool that watches for file system
 
 # example
 `./hen main.c make IN_CLOSE_WRITE`
+
 `./hen *.c make IN_CLOSE_WRITE`

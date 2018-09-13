@@ -4,6 +4,9 @@
 #include <sys/inotify.h>
 #include "event.h"
 #include "hen_action.h"
+#include <time.h>
+
+#include "timestamp.h"
 
 int main(int argc, char **argv) {
   hen_action action;
@@ -21,11 +24,11 @@ int main(int argc, char **argv) {
   
   watch_init();
   
-  printf("Watching for: ");
+  timestamp("Watching for: ");
   for (i = 0; i < action.file_list_sz; i++) {
     printf("%s, ", action.file_name[i]);
   }
-  printf("with command \"%s\"\n", action.cmd);
+  printf("with command \"%s\".\n", action.cmd);
   wd_name_pair * wp_list;
   wp_list = add_watch(action);
   for (;;) {

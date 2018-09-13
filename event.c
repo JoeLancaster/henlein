@@ -1,5 +1,5 @@
 #define _GNU_SOURCE
-//
+
 #include "event.h"
 #include "mask_names.h"
 
@@ -11,10 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
-
-
-
-//
+#include "timestamp.h"
 
 int fd;
 extern char **environ;
@@ -56,8 +53,14 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
   if (ev -> mask == action.trigger) {
     int i = 0;
     while (wp_list[i++].wd != ev -> wd); //find which file wd refers to
-    printf("File system event: %s. With file %s\n", mask_to_string(ev -> mask), action.file_name[i - 1]);
-    printf("Executing \"%s\"\n", action.cmd);
+    int verbose = 1; //TODO: -v flag
+    if(verbose) {
+      timestamp("File system event: %s. With file %s\n", mask_to_string(ev -> mask), action.file_name[i - 1]);
+    } else {
+      
+    }
+
+    timestamp("Executing \"%s\"\n", action.cmd);
     pid_t pid = fork();
     int status = 0;
     if (pid == -1) {
@@ -66,7 +69,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
     }
     else if (pid > 0) { //parent
       waitpid(pid, &status, 0);
-      printf("%s exits with %d\n", action.cmd, WEXITSTATUS(status));
+      timestamp("%s exits with %d\n", action.cmd, WEXITSTATUS(status));//
     } else {
       char * const _argv[] = {action.cmd, NULL};
       if (execvpe(action.cmd, _argv, environ) < 0) {

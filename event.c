@@ -67,6 +67,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
       perror("fork");
       exit(-1);
     }
+    
     else if (pid > 0) { //parent
       waitpid(pid, &status, 0);
       timestamp("%s exits with %d\n", action.cmd, WEXITSTATUS(status));//

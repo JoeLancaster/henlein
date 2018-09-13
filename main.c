@@ -7,7 +7,6 @@
 
 int main(int argc, char **argv) {
   hen_action action;
-  printf("argc: %d\n", argc);
   if (argc < 2) {
     printf("FATAL: \n\tNo arguments given. I don't know what to do!\n");
     return -1;
@@ -20,7 +19,7 @@ int main(int argc, char **argv) {
   action.cmd = argv[argc - 1];
   action.trigger = IN_CLOSE_WRITE;
   
-  watch_init1();
+  watch_init();
   
   printf("Watching for: ");
   for (i = 0; i < action.file_list_sz; i++) {
@@ -29,11 +28,9 @@ int main(int argc, char **argv) {
   printf("with command \"%s\"\n", action.cmd);
   wd_name_pair * wp_list;
   wp_list = add_watch(action);
-  for (i = 0; i < action.file_list_sz; i++) {
-    printf("File: \"%s\" has wd: %d\n", wp_list[i].file_name, wp_list[i].wd);
-  }
   for (;;) {
     watch_and_do(action, wp_list);
   }
+  free(wp_list);
   return 0;
 }

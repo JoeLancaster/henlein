@@ -16,4 +16,8 @@ typedef struct {
   int wd;
 } wd_name_pair;
 
+/* 
+   wd appears to enumerate from 1 so we could get file names just with action.file_name[wd - 1], but don't know if that's defined behaviour
+ */
+
 #endif

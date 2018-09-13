@@ -5,8 +5,7 @@
 
 #define MAX_WATCHED_FILES 10
 
-void watch_init(char *);
-void watch_init1(void);
+void watch_init(void);
 void watch_and_say(char *);
 void watch_and_do(hen_action, wd_name_pair *);
 wd_name_pair * add_watch(hen_action);

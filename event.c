@@ -1,32 +1,26 @@
+#define _GNU_SOURCE
+//
 #include "event.h"
 #include "mask_names.h"
 
-#include <sys/inotify.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <linux/limits.h>
-#include <stdlib.h>
-#include <sys/wait.h>
-#include <sys/types.h>
 #include <errno.h>
+#include <linux/limits.h>
+#include <sys/wait.h>
+#include <sys/inotify.h>
+#include <sys/types.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+
+
+
+//
 
 int fd;
 extern char **environ;
 
-void watch_init(char *file_name) {
-  fd = inotify_init();
-  int err_watch = inotify_add_watch(fd, file_name, IN_CLOSE_WRITE);
-  if (fd < 0 || err_watch < 0) {
-    perror("Initialization error");
-    exit(-1);
-  }
-  printf("Watch descriptor: %d", err_watch);
-  return;
-}
-
-void watch_init1() {
-  fd = inotify_init();
+void watch_init() {
+  fd = inotify_init(); //fd is unrelated to the file we are watching
   if (fd < 0) {
     perror("Initialization error");
     exit(-1);
@@ -34,7 +28,6 @@ void watch_init1() {
 }
 
 wd_name_pair * add_watch(hen_action action) {
-  //build array of watch descriptors paired with file names
   wd_name_pair * wp_list = malloc(sizeof(wd_name_pair) * action.file_list_sz);
   int i;
   for (i = 0; i < action.file_list_sz; i++) {
@@ -63,20 +56,23 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
   if (ev -> mask == action.trigger) {
     int i = 0;
     while (wp_list[i++].wd != ev -> wd); //find which file wd refers to
-    printf("wd index: %d\n", i);
-    printf("File system event: %s. With cookie %u. With file %s\n", mask_to_string(ev -> mask), ev -> cookie, action.file_name[i - 1]);
+    printf("File system event: %s. With file %s\n", mask_to_string(ev -> mask), action.file_name[i - 1]);
     printf("Executing \"%s\"\n", action.cmd);
     pid_t pid = fork();
     int status = 0;
     if (pid == -1) {
-      perror("Fork error:");
+      perror("fork");
       exit(-1);
     }
     else if (pid > 0) { //parent
       waitpid(pid, &status, 0);
+      printf("%s exits with %d\n", action.cmd, WEXITSTATUS(status));
     } else {
       char * const _argv[] = {action.cmd, NULL};
-      execve(action.cmd, _argv, environ);
+      if (execvpe(action.cmd, _argv, environ) < 0) {
+	perror("execvpe"); //
+	exit(-1);
+      }
     }
   }
   return;

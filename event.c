@@ -59,7 +59,6 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
     } else {
       
     }
-
     timestamp("Executing \"%s\"\n", action.cmd);
     pid_t pid = fork();
     int status = 0;

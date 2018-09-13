@@ -4,5 +4,6 @@
 #include <stdint.h>
 
 char * mask_to_string(uint32_t);
+uint32_t string_to_mask(char *);
 
 #endif

@@ -1,5 +1,4 @@
-#define _GNU_SOURCE
-
+#define _GNU_SOURCE //needed for execvpe
 #include "event.h"
 #include "mask_names.h"
 
@@ -25,7 +24,7 @@ void watch_init() {
 }
 
 wd_name_pair * add_watch(hen_action action) {
-  wd_name_pair * wp_list = malloc(sizeof(wd_name_pair) * action.file_list_sz);
+  wd_name_pair *wp_list = malloc(sizeof(wd_name_pair) * action.file_list_sz);
   int i;
   for (i = 0; i < action.file_list_sz; i++) {
     wd_name_pair wp;
@@ -41,7 +40,7 @@ wd_name_pair * add_watch(hen_action action) {
 }
 
 void watch_and_do(hen_action action, wd_name_pair * wp_list) {
-  const int buf_size = sizeof(struct inotify_event) + NAME_MAX +1;
+  const size_t buf_size = sizeof(struct inotify_event) + NAME_MAX +1;
   char read_buf[buf_size] __attribute__ ((aligned(8)));
   struct inotify_event *ev;
   int read_bytes = read(fd, read_buf, buf_size);

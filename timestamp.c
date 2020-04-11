@@ -4,7 +4,8 @@
 #include <stdlib.h>
 #include <stdarg.h>
 
-#define TIMESTAMP_SIZE 11
+#define TIMESTAMP_STR "[%H:%M:%S]"
+#define TIMESTAMP_SIZE sizeof(TIMESTAMP_STR)
 
 
 void timestamp(char * msg, ...) {
@@ -20,7 +21,7 @@ void timestamp(char * msg, ...) {
     exit(-1);
   }
 
-  if(strftime(out, sizeof(out),"[%H:%M:%S]" ,tmp) == 0) {
+  if(strftime(out, sizeof(out), TIMESTAMP_STR, tmp) == 0) {
     fprintf(stderr, "strftime returned 0");
     exit(-1);
   }

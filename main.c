@@ -3,31 +3,44 @@
 #include <string.h>
 #include <sys/inotify.h>
 #include <time.h>
+#include <unistd.h>
+#include <limits.h>
+#include <errno.h>
 
 #include "event.h"
 #include "hen_action.h"
 #include "mask_names.h"
 #include "timestamp.h"
 
+extern int errno;
+
 int main(int argc, char **argv) {
   if (argc < 2) {
     printf("FATAL: \n\tNo arguments given. I don't know what to do!\n");
     return -1;
   }
-
   hen_action action;
-  /*hen_action action;
   int i;
-  for (i = 1; i < argc - 1; i++) {
-    action.file_name[i - 1] = argv[i]; //files are argv[1 .. argc - 1]
-    }*/
-  int i;
-  memcpy(action.file_name, (argv + 1), argc - 1);
-  for (i = 0; i < argc - 1; i++) {
-    printf("%s\n", action.file_name[i]);
+  int exit_flag = 0;
+  for (i = 1; i < argc - 2; i++) {
+    char buf[PATH_MAX];
+    action.file_name[i - 1] = realpath(argv[i], buf); //files are argv[1 .. argc - 1]
+    int eno = errno;
+    if (eno != 0) {
+      exit_flag = 1;
+      switch(eno) {
+      case EACCES:
+	printf("Access denied for: \"%s\"\n", argv[i]);
+	break;
+      case EINVAL:
+      case ENOENT:
+	printf("The file \"%s\" doesn't exist or cannot be found.\n", argv[i]);
+	break;
+      }
+    }
   }
-  return 0;
-    
+  if (exit_flag)
+    exit(EXIT_FAILURE);    
   action.file_list_sz = argc - 3;
   action.cmd = argv[argc - 2];
   uint32_t mask = string_to_mask(argv[argc - 1]);

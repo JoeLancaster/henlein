@@ -7,7 +7,6 @@
 #define TIMESTAMP_STR "[%H:%M:%S]"
 #define TIMESTAMP_SIZE sizeof(TIMESTAMP_STR)
 
-
 void timestamp(char * msg, ...) {
   va_list ap;
   va_start(ap, msg);

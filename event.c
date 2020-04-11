@@ -1,6 +1,4 @@
 #define _GNU_SOURCE //needed for execvpe
-#include "event.h"
-#include "mask_names.h"
 
 #include <errno.h>
 #include <linux/limits.h>
@@ -10,7 +8,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+
 #include "timestamp.h"
+#include "event.h"
+#include "mask_names.h"
+
 
 int fd;
 extern char **environ;
@@ -40,7 +42,7 @@ wd_name_pair * add_watch(hen_action action) {
 }
 
 void watch_and_do(hen_action action, wd_name_pair * wp_list) {
-  const size_t buf_size = sizeof(struct inotify_event) + NAME_MAX +1;
+  const size_t buf_size = sizeof(struct inotify_event) + NAME_MAX + 1; //should be PATH_MAX?
   char read_buf[buf_size] __attribute__ ((aligned(8)));
   struct inotify_event *ev;
   int read_bytes = read(fd, read_buf, buf_size);
@@ -68,7 +70,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
     
     else if (pid > 0) { //parent
       waitpid(pid, &status, 0);
-      timestamp("%s exits with %d\n", action.cmd, WEXITSTATUS(status));//
+      timestamp("%s exits with %d\n", action.cmd, WEXITSTATUS(status));
     } else {
       char * const _argv[] = {action.cmd, NULL};
       if (execvpe(action.cmd, _argv, environ) < 0) {

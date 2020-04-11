@@ -19,13 +19,16 @@ int main(int argc, char **argv) {
     printf("FATAL: \n\tNo arguments given. I don't know what to do!\n");
     return -1;
   }
+  
   hen_action action;
   int i;
   int exit_flag = 0;
   for (i = 1; i < argc - 2; i++) {
-    char buf[PATH_MAX];
-    action.file_name[i - 1] = realpath(argv[i], buf); //files are argv[1 .. argc - 1]
+
+    action.file_name[i - 1] = malloc(PATH_MAX);
+    realpath(argv[i], action.file_name[i - 1]);
     int eno = errno;
+    
     if (eno != 0) {
       exit_flag = 1;
       switch(eno) {
@@ -39,16 +42,19 @@ int main(int argc, char **argv) {
       }
     }
   }
+  
   if (exit_flag)
-    exit(EXIT_FAILURE);    
+    exit(EXIT_FAILURE);
+  
   action.file_list_sz = argc - 3;
   action.cmd = argv[argc - 2];
   uint32_t mask = string_to_mask(argv[argc - 1]);
+  
   if (mask == 0) {
     printf("\"%s\" is not a valid trigger\n", argv[argc - 1]);
     exit(-1);
   }
-  action.trigger = mask;//
+  action.trigger = mask;
   
   watch_init();
   
@@ -57,12 +63,12 @@ int main(int argc, char **argv) {
     printf("%s, ", action.file_name[i]);
   }
   printf("with command \"%s\" on event: %s.\n", action.cmd, mask_to_string(action.trigger));
-  wd_name_pair * wp_list;
+  wd_name_pair *wp_list;
   wp_list = add_watch(action);
   for (;;) {
-    watch_and_do(action, wp_list);
+        watch_and_do(action, wp_list);
   }
-  free(wp_list);
+  free(wp_list);  
   return 0;
 }
 

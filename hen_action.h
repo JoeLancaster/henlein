@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef struct {
   char * file_name[10];

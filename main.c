@@ -12,8 +12,6 @@
 #include "mask_names.h"
 #include "timestamp.h"
 
-extern int errno;
-
 int main(int argc, char **argv) {
   if (argc < 2) {
     printf("FATAL: \n\tNo arguments given. I don't know what to do!\n");
@@ -22,37 +20,28 @@ int main(int argc, char **argv) {
   
   hen_action action;
   int i;
-  int exit_flag = 0;
-  for (i = 1; i < argc - 2; i++) {
 
+
+  //resolve arguments as filepaths
+  for (i = 1; i < argc - 2; i++) {
     action.file_name[i - 1] = malloc(PATH_MAX);
-    realpath(argv[i], action.file_name[i - 1]);
-    int eno = errno;
-    
-    if (eno != 0) {
-      exit_flag = 1;
-      switch(eno) {
-      case EACCES:
-	printf("Access denied for: \"%s\"\n", argv[i]);
-	break;
-      case EINVAL:
-      case ENOENT:
-	printf("The file \"%s\" doesn't exist or cannot be found.\n", argv[i]);
-	break;
-      }
+    char * ptr = realpath(argv[i], action.file_name[i - 1]);
+    if (errno != 0) {
+      printf(strerror(errno));
+      exit(EXIT_FAILURE);
+    } else if (ptr == NULL) {
+      printf("Problem locating file \"%s\"", argv[i]);
+      exit(EXIT_FAILURE);
     }
   }
-  
-  if (exit_flag)
-    exit(EXIT_FAILURE);
-  
+ 
   action.file_list_sz = argc - 3;
   action.cmd = argv[argc - 2];
   uint32_t mask = string_to_mask(argv[argc - 1]);
   
   if (mask == 0) {
     printf("\"%s\" is not a valid trigger\n", argv[argc - 1]);
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   action.trigger = mask;
   

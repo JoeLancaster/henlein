@@ -52,7 +52,7 @@ int main(int argc, char **argv) {
   
   if (mask == 0) {
     printf("\"%s\" is not a valid trigger\n", argv[argc - 1]);
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   action.trigger = mask;
   

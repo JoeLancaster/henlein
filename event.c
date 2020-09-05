@@ -21,20 +21,20 @@ void watch_init() {
   fd = inotify_init(); //fd is unrelated to the file we are watching
   if (fd < 0) {
     perror("Initialization error");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
 }
 
 wd_name_pair * add_watch(hen_action action) {
   wd_name_pair *wp_list = malloc(sizeof(wd_name_pair) * action.file_list_sz);
-  int i;
+  size_t i;
   for (i = 0; i < action.file_list_sz; i++) {
     wd_name_pair wp;
     wp.file_name = action.file_name[i];
     wp.wd = inotify_add_watch(fd, action.file_name[i], action.trigger);
     if (wp.wd < 0) {
       perror("Error adding watch");
-      exit(-1);
+      exit(EXIT_FAILURE);
     }
     wp_list[i] = wp;
   }
@@ -48,7 +48,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
   int read_bytes = read(fd, read_buf, buf_size);
   if (read_bytes <= 0) {
     perror("Inotify file descriptor error");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   ev = (struct inotify_event *) read_buf;
   if (ev -> mask == action.trigger) {
@@ -65,7 +65,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
     int status = 0;
     if (pid == -1) {
       perror("fork");
-      exit(-1);
+      exit(EXIT_FAILURE);
     }
     
     else if (pid > 0) { //parent
@@ -75,7 +75,7 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list) {
       char * const _argv[] = {action.cmd, NULL};
       if (execvpe(action.cmd, _argv, environ) < 0) {
 	perror("execvpe"); //
-	exit(-1);
+	exit(EXIT_FAILURE);
       }
     }
   }

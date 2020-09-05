@@ -14,23 +14,24 @@
 
 int main(int argc, char **argv) {
   if (argc < 2) {
-    printf("FATAL: \n\tNo arguments given. I don't know what to do!\n");
-    return -1;
+    fprintf(stderr, "FATAL: \n\tNo arguments given. I don't know what to do!\n");
+    exit(EXIT_FAILURE);
   }
   
   hen_action action;
-  int i;
+  size_t i;
 
 
   //resolve arguments as filepaths
-  for (i = 1; i < argc - 2; i++) {
+  for (i = 1; i < (size_t)(argc - 2); i++) {
     action.file_name[i - 1] = malloc(PATH_MAX);
     char * ptr = realpath(argv[i], action.file_name[i - 1]);
-    if (errno != 0) {
-      printf(strerror(errno));
+    int eno = errno;
+    if (eno != 0) {
+      fprintf(stderr, "Realpath error: %s\n", strerror(eno));
       exit(EXIT_FAILURE);
     } else if (ptr == NULL) {
-      printf("Problem locating file \"%s\"", argv[i]);
+      fprintf(stderr, "Problem locating file \"%s\"", argv[i]);
       exit(EXIT_FAILURE);
     }
   }
@@ -40,7 +41,7 @@ int main(int argc, char **argv) {
   uint32_t mask = string_to_mask(argv[argc - 1]);
   
   if (mask == 0) {
-    printf("\"%s\" is not a valid trigger\n", argv[argc - 1]);
+    fprintf(stderr, "\"%s\" is not a valid trigger\n", argv[argc - 1]);
     exit(EXIT_FAILURE);
   }
   action.trigger = mask;

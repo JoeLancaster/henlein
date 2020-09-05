@@ -17,12 +17,12 @@ void timestamp(char * msg, ...) {
   tmp = localtime(&t);
   if (tmp == NULL) {
     perror("localtime");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
 
   if(strftime(out, sizeof(out), TIMESTAMP_STR, tmp) == 0) {
     fprintf(stderr, "strftime returned 0");
-    exit(-1);
+    exit(EXIT_FAILURE);
   }
   printf("%s | ", out);
   vprintf(msg, ap);

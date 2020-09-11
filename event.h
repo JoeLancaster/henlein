@@ -7,7 +7,7 @@
 
 void watch_init(void);
 void watch_and_say(char *);
-void watch_and_do(hen_action, wd_name_pair *);
+void watch_and_do(hen_action, wd_name_pair *, const int);
 wd_name_pair * add_watch(hen_action);
 
 #endif //EVENT_H

@@ -12,10 +12,12 @@
 #include "timestamp.h"
 #include "event.h"
 #include "mask_names.h"
+#include "dynamic_read.h"
 
+#define BLK_SIZE 4096
+#define READ_MAX (2 << 28) // 256MiB
 
 int fd;
-extern char **environ;
 
 void watch_init() {
   fd = inotify_init(); //fd is unrelated to the file we are watching
@@ -52,11 +54,17 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list, const int verbose) 
   }
   ev = (struct inotify_event *) read_buf;
   if (ev -> mask == action.trigger) {
+    int io_p[2]; 
     int i = 0;
     while (wp_list[i++].wd != ev -> wd); //find which file wd refers to
-    if(verbose) {
+    if(verbose > 0) {
       timestamp("File system event: %s. With file %s\n", mask_to_string(ev -> mask), action.file_name[i - 1]);
       timestamp("Executing \"%s\"\n", action.cmd);  
+    }
+
+    if (pipe(io_p) == -1) {
+      perror("Pipe: "); 
+      exit(EXIT_FAILURE);
     }
     pid_t pid = fork();
     int status = 0;
@@ -64,13 +72,34 @@ void watch_and_do(hen_action action, wd_name_pair * wp_list, const int verbose) 
       perror("fork");
       exit(EXIT_FAILURE);
     }
-    
     else if (pid > 0) { //parent
-      waitpid(pid, &status, 0);
-      if (verbose) {
+      if (verbose == -1) { //quiet mode
+	close(io_p[1]);
+	int bread = 0;
+	int pf;
+	char *output = d_read(io_p[0], &bread, BLK_SIZE, READ_MAX, &pf);
+	if (output == NULL) {
+	  fprintf(stderr, "Lost all output from %s.\n", action.cmd);
+	}
+	waitpid(pid, &status, 0);
+	if (status) {
+	  printf("%.*s\n", bread, output);
+	  free(output);
+	}
+	if (pf) {
+	  fprintf(stderr, "Lost some output from %s.\n", action.cmd);
+	}
+      }
+      if (verbose > 0) {
 	timestamp("%s exits with %d\n", action.cmd, WEXITSTATUS(status));
       }
     } else {
+      if (verbose == -1) {
+	dup2(io_p[1], STDOUT_FILENO);
+	dup2(io_p[1], STDERR_FILENO);
+	close(io_p[0]);
+	close(io_p[1]);
+      }
       char * const _argv[] = {action.cmd, NULL};
       if (execvpe(action.cmd, _argv, environ) < 0) {
 	perror("execvpe"); //

@@ -15,6 +15,7 @@
 
 const char *usage = "usage: %s [OPTIONS] file1 file2... command trigger\n"
   "\t-v: Verbose output\n"
+  "\t-q: Quiet mode - only print the output of the command if it fails\n"
   "\t-h: Prints this message\n";
 
 int main(int argc, char **argv) {
@@ -28,10 +29,13 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
 
-  while ((opt = getopt(argc, argv, "hv")) != -1) {
+  while ((opt = getopt(argc, argv, "hvq")) != -1) {
     switch (opt) {
     case 'v':
       verbose = 1;
+      break;
+    case 'q': //share verbose variable on the assumption that their functionalities are disjoint, for now.
+      verbose = -1;
       break;
     case 'h':
     default:

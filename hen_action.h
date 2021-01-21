@@ -5,8 +5,10 @@
 #include <stdlib.h>
 #include <limits.h>
 
+#define FILES_MAX 2048
+
 typedef struct {
-  char * file_name[10];
+  char * file_name[FILES_MAX];
   size_t file_list_sz;
   char * cmd; //absolute path to command
   uint32_t trigger; //IN_NOTIFY IN_CLOSE_WRITE etc....

@@ -7,6 +7,7 @@
 #include <limits.h>
 #include <errno.h>
 #include <unistd.h>
+#include <getopt.h>
 
 #include "event.h"
 #include "hen_action.h"
@@ -48,6 +49,7 @@ int main(int argc, char **argv) {
   for (i = 0; i < (size_t)(argc - optind - 2); i++) {
     size_t ind = i + optind;
     action.file_name[i] = malloc(PATH_MAX);
+    fprintf(stderr, "argv[ind]: %s\n", argv[ind]);
     char * ptr = realpath(argv[ind], action.file_name[i]);
     int eno = errno;
     if (eno != 0) {

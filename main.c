@@ -20,6 +20,7 @@
 const char *usage = "usage: %s [OPTIONS] file1 file2... command trigger\n"
   "\t-v: Verbose output\n"
   "\t-q: Quiet mode - only print the output of the command if it fails\n"
+  "\t-d: Directory mode: register all files in the given directory(ies)\n"
   "\t-h: Prints this message\n";
 
 #define DIRS_START_LEN 128

@@ -43,7 +43,7 @@ int build_from_dir (PATH_STR_TYPE tmp, hen_action *a, int recursive) {
 
   if (d) {
     while ((dir = readdir(d)) != NULL) {
-      //do you need to realpath a dir name like this? is it already absolute
+      //do you need to realpath a dir name like this? is it already absolute?
       int isd = is_dir(dir -> d_name);
       if (isd && recursive) {
 	//go deeper!
@@ -56,7 +56,7 @@ int build_from_dir (PATH_STR_TYPE tmp, hen_action *a, int recursive) {
 	if (err) {
 	  fprintf(stderr, "Excluding \"%s\" because: %s\n", path, strerror(err));
 	} else {
-	  act_add_file( a, path);
+	  act_add_file(a, tmp);
 	  file_cnt++;
 	}
       } else {

@@ -75,8 +75,9 @@ int main(int argc, char **argv) {
     }
   }
   printf("Watching %d files\n", file_cnt);
-  action.file_list_sz = argc - optind - 2;
-  action.cmd = argv[optind + action.file_list_sz];
+  printf("file_list_sz: %lu\n", action.file_list_sz);
+  //action.file_list_sz = (argc - optind - 2);
+  action.cmd = argv[optind + (argc - optind - 2)];
   uint32_t mask = string_to_mask(argv[argc - 1]);
   
   if (mask == 0) {
@@ -84,7 +85,6 @@ int main(int argc, char **argv) {
     exit(EXIT_FAILURE);
   }
   action.trigger = mask;
-  
   watch_init();
   
   timestamp("Watching for: ");

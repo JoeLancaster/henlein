@@ -1,3 +1,8 @@
 hen
 hen.exe
 *core*
+*.*~
+*.patch
+*.txt
+*.out
+*.sh

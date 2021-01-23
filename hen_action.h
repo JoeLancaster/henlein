@@ -3,7 +3,9 @@
 
 #include <stdint.h>
 #include <stdlib.h>
-#include <limits.h>
+#include <linux/limits.h>
+
+#include "dir_utils.h"
 
 #define FILES_MAX 2048
 
@@ -18,6 +20,10 @@ typedef struct {
   char * file_name;
   int wd;
 } wd_name_pair;
+
+
+int act_add_file(hen_action *, PATH_STR_TYPE);
+void build_from_dir(PATH_STR_TYPE, hen_action *, int);
 
 /* 
    wd appears to enumerate from 1 so we could get file names just with action.file_name[wd - 1], but don't know if that's defined behaviour

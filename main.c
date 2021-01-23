@@ -22,12 +22,6 @@ const char *usage = "usage: %s [OPTIONS] file1 file2... command trigger\n"
   "\t-q: Quiet mode - only print the output of the command if it fails\n"
   "\t-h: Prints this message\n";
 
-enum {
-  FILE_MODE = 0,
-  DIR_MODE,
-  DIR_RECURSIVE_MODE
-};
-
 #define DIRS_START_LEN 128
 
 int main(int argc, char **argv) {
@@ -63,7 +57,6 @@ int main(int argc, char **argv) {
       break;
     }
   }
-  PATH_STR_TYPE tmp;
   
   int file_cnt = 0;
   for (i = 0; i < (size_t)(argc - optind - 2); i++) {
@@ -75,11 +68,13 @@ int main(int argc, char **argv) {
       continue;
     }
     if (directory_mode == DIR_MODE) {
-      build_from_dir(path, &action, directory_mode == DIR_RECURSIVE_MODE);
+      file_cnt += build_from_dir(path, &action, directory_mode == DIR_RECURSIVE_MODE);
     } else {
       act_add_file( &action, path);
+      file_cnt++;
     }
   }
+  printf("Watching %d files\n", file_cnt);
   action.file_list_sz = argc - optind - 2;
   action.cmd = argv[optind + action.file_list_sz];
   uint32_t mask = string_to_mask(argv[argc - 1]);

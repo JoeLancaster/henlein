@@ -3,11 +3,17 @@
 
 #include <linux/limits.h>
 
+
+enum {
+  FILE_MODE = 0,
+  DIR_MODE,
+  DIR_RECURSIVE_MODE
+};
+
 typedef char PATH_STR_TYPE[PATH_MAX];
 
 int is_dot_dirs (PATH_STR_TYPE);
 int e_rp (const char *, PATH_STR_TYPE);
 int is_dir (PATH_STR_TYPE);
-int add_files_in_dir(struct dirent *, int file_cnt); 
 
 #endif

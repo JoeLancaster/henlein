@@ -1,9 +1,10 @@
-#include "dir_utils.h"
-
 #include <errno.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+
+#include "dir_utils.h"
+#include "hen_action.h"
 
 int is_dot_dirs (PATH_STR_TYPE name) {
   int dotdot = strcmp(name, "..");

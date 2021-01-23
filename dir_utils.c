@@ -2,6 +2,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "dir_utils.h"
 #include "hen_action.h"
@@ -21,8 +22,14 @@ int e_rp (const char * src, PATH_STR_TYPE dest) {
 }
 
 int is_dir (PATH_STR_TYPE path) {
+  int eno;
   struct stat s;
-  if (stat(path, &s) != 0) {
+  
+  errno = 0;
+  stat(path, &s);
+  eno = errno;
+  if (eno) {
+    fprintf(stderr, strerror(eno));
     return 0;
   }
   return S_ISDIR(s.st_mode);

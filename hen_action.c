@@ -43,22 +43,21 @@ int build_from_dir (PATH_STR_TYPE tmp, hen_action *a, int recursive) {
 
   if (d) {
     while ((dir = readdir(d)) != NULL) {
-      //do you need to realpath a dir name like this? is it already absolute?
-      int isd = is_dir(dir -> d_name);
+      PATH_STR_TYPE path;
+      strcpy(path, dirname);
+      strcat(path, dir -> d_name);
+      if (err) {
+	fprintf(stderr, "Excluding \"%s\" because: %s\n", path, strerror(err));
+	continue;
+      }
+      int isd = is_dir(path);
       if (isd && recursive) {
 	//go deeper!
 	printf("Deep.\n");
       } else if ( ! isd && ! is_dot_dirs(dir -> d_name)) {
-	PATH_STR_TYPE path;
-	strcpy(path, dirname);
-	strcat(path, dir -> d_name);
-	err = e_rp(path, tmp);
-	if (err) {
-	  fprintf(stderr, "Excluding \"%s\" because: %s\n", path, strerror(err));
-	} else {
-	  act_add_file(a, tmp);
-	  file_cnt++;
-	}
+	act_add_file(a, tmp);
+	file_cnt++;
+
       } else {
 	continue; //skip directories
       }

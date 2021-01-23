@@ -4,4 +4,4 @@ flags = -std=gnu99 -Wall -Wextra -Wpedantic
 default:
 	gcc $(source) $(flags) -Werror -o hen
 debug:
-	gcc -g  $(source) $(flags) -o hen
+	gcc -g -O0 $(source) $(flags) -o hen

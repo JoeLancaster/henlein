@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
       fprintf(stderr, "%s: %s\n", argv[ind], strerror(err));
       continue;
     }
-    if (directory_mode == DIR_MODE) {
+    if (directory_mode) {
       file_cnt += build_from_dir(path, &action, directory_mode == DIR_RECURSIVE_MODE);
     } else {
       act_add_file( &action, path);

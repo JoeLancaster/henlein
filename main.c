@@ -1,5 +1,4 @@
 //#define FILE_LIST_DYNAMIC
-#undef FILE_LIST_DYNAMIC
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -33,11 +32,16 @@ int main(int argc, char **argv) {
   printf("Dynamic mode\n");
   errno = 0;
   action.file_name = malloc(sizeof(char *) * FILES_MAX);
+
   int eno = errno;
   if (action.file_name == NULL) {
     fprintf(stderr, "Malloc error: %s\n", strerror(eno));
     exit(-1);
   }
+  for (int j = 0; j < FILES_MAX; j++) {
+    action.file_name[j] = NULL;
+  }
+  printf("Nulled the strings.\n");
   #endif
   size_t i;
   int verbose = 0;
@@ -72,19 +76,25 @@ int main(int argc, char **argv) {
   }
 
   int file_cnt = 0;
+  
+  path_t path;
+  path_new(&path, "/");
+  
   for (i = 0; i < (size_t)(argc - optind - 2); i++) {
+    char tmp_path[PATH_MAX];
     size_t ind = i + optind;
-    PATH_STR_TYPE path;
-    int err = e_rp(argv[ind], path);
+    int err = e_rp(argv[ind], tmp_path);
     if (err) {
       fprintf(stderr, "%s: %s\n", argv[ind], strerror(err));
       continue;
     }
+
+    path_set(&path, tmp_path);
+    
     if (directory_mode) {
-      strcat(path, "/");
-      build_from_dir(&action, path, directory_mode == DIR_RECURSIVE_MODE);
+      build_from_dir(&action, &path, directory_mode == DIR_RECURSIVE_MODE);
     } else {
-      act_add_file( &action, path);
+      act_add_file( &action, &path);
       file_cnt++;
     }
   }
@@ -100,12 +110,13 @@ int main(int argc, char **argv) {
   }
   action.trigger = mask;
   watch_init();
-  
-  timestamp("Watching for: ");
-  for (i = 0; i < action.file_list_sz; i++) {
-    printf("%s, ", action.file_name[i]);
+  if (verbose) {
+    timestamp("Watching for: ");
+    for (i = 0; i < action.file_list_sz; i++) {
+      printf("%s, ", action.file_name[i]);
+    }
+    printf("with command \"%s\" on event: %s.\n", action.cmd, mask_to_string(action.trigger));
   }
-  printf("with command \"%s\" on event: %s.\n", action.cmd, mask_to_string(action.trigger));
   wd_name_pair *wp_list;
   wp_list = add_watch(action);
   for (;;) {

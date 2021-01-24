@@ -6,13 +6,17 @@
 #include <linux/limits.h>
 
 #include "dir_utils.h"
+#include "path.h"
 
-#define FILES_MAX 2048
-#undef FILE_LIST_DYNAMIC
+#define FILES_MAX 65536
+
+#ifdef FILE_LIST_DYNAMIC
+typedef char * str_t;
+#endif
 
 typedef struct {
   #ifdef FILE_LIST_DYNAMIC
-  char ** file_name;
+  char **file_name;
   #else
   char * file_name[FILES_MAX];
   #endif
@@ -27,8 +31,8 @@ typedef struct {
 } wd_name_pair;
 
 
-int act_add_file(hen_action *, PATH_STR_TYPE);
-int build_from_dir(hen_action *, PATH_STR_TYPE, int);
+int act_add_file(hen_action *, path_t *);
+int build_from_dir(hen_action *, path_t *, int);
 
 /* 
    wd appears to enumerate from 1 so we could get file names just with action.file_name[wd - 1], but don't know if that's defined behaviour

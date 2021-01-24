@@ -1,4 +1,4 @@
-source = main.c event.c mask_names.c timestamp.c dynamic_read.c dir_utils.c hen_action.c
+source = main.c event.c mask_names.c timestamp.c dynamic_read.c dir_utils.c hen_action.c path.c
 flags = -std=gnu99 -Wall -Wextra -Wpedantic
 
 default:

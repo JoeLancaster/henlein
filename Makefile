@@ -5,3 +5,5 @@ default:
 	gcc $(source) $(flags) -Werror -o hen
 debug:
 	gcc -g -O0 $(source) $(flags) -o hen
+opt:
+	gcc -O3 $(source) $(flags) -o hen

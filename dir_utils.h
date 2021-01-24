@@ -10,7 +10,7 @@ enum {
   DIR_RECURSIVE_MODE
 };
 
-typedef char PATH_STR_TYPE[PATH_MAX];
+typedef char PATH_STR_TYPE[PATH_MAX + 1];
 
 int is_dot_dirs (PATH_STR_TYPE);
 int e_rp (const char *, PATH_STR_TYPE);

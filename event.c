@@ -37,7 +37,6 @@ wd_name_pair * add_watch(hen_action action) {
     if (wp.wd < 0) {
       perror("Error adding watch");
       fprintf(stderr, "In file: %s\n", action.file_name[i]);
-      exit(EXIT_FAILURE);
     }
     wp_list[i] = wp;
   }

@@ -1,3 +1,6 @@
+//#define FILE_LIST_DYNAMIC
+#undef FILE_LIST_DYNAMIC
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,10 +26,19 @@ const char *usage = "usage: %s [OPTIONS] file1 file2... command trigger\n"
   "\t-d: Directory mode: register all files in the given directory(ies)\n"
   "\t-h: Prints this message\n";
 
-#define DIRS_START_LEN 128
-
 int main(int argc, char **argv) {
   hen_action action;
+  action.file_list_sz = 0;
+  #ifdef FILE_LIST_DYNAMIC
+  printf("Dynamic mode\n");
+  errno = 0;
+  action.file_name = malloc(sizeof(char *) * FILES_MAX);
+  int eno = errno;
+  if (action.file_name == NULL) {
+    fprintf(stderr, "Malloc error: %s\n", strerror(eno));
+    exit(-1);
+  }
+  #endif
   size_t i;
   int verbose = 0;
   int opt;
@@ -58,7 +70,7 @@ int main(int argc, char **argv) {
       break;
     }
   }
-  
+
   int file_cnt = 0;
   for (i = 0; i < (size_t)(argc - optind - 2); i++) {
     size_t ind = i + optind;
@@ -69,7 +81,8 @@ int main(int argc, char **argv) {
       continue;
     }
     if (directory_mode) {
-      file_cnt += build_from_dir(path, &action, directory_mode == DIR_RECURSIVE_MODE);
+      strcat(path, "/");
+      build_from_dir(&action, path, directory_mode == DIR_RECURSIVE_MODE);
     } else {
       act_add_file( &action, path);
       file_cnt++;
